@@ -1,6 +1,6 @@
 # Boot animation
-TARGET_SCREEN_WIDTH := 1280
-TARGET_SCREEN_HEIGHT := 720
+TARGET_SCREEN_WIDTH := 1920
+TARGET_SCREEN_HEIGHT := 1080
 
 # Inherit some common LineageOS stuff.
 $(call inherit-product, vendor/cm/config/common_full_tablet_wifionly.mk)

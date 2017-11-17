@@ -21,7 +21,7 @@ $(call inherit-product, frameworks/native/build/tablet-7in-hdpi-1024-dalvik-heap
 $(call inherit-product-if-exists, vendor/brcm/rpi3/rpi3-vendor.mk)
 
 PRODUCT_AAPT_CONFIG := normal
-PRODUCT_AAPT_PREF_CONFIG := mdpi
+PRODUCT_AAPT_PREF_CONFIG := hdpi
 PRODUCT_CHARACTERISTICS := tablet
 
 # Audio
@@ -47,7 +47,8 @@ PRODUCT_PACKAGES += \
     wpa_supplicant.conf
 
 PRODUCT_COPY_FILES += \
-    hardware/broadcom/wlan/bcmdhd/config/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf
+    hardware/broadcom/wlan/bcmdhd/config/wpa_supplicant_overlay.conf:system/etc/wifi/wpa_supplicant_overlay.conf \
+    hardware/broadcom/wlan/bcmdhd/config/p2p_supplicant_overlay.conf:system/etc/wifi/p2p_supplicant_overlay.conf
 
 # Ramdisk
 PRODUCT_COPY_FILES += \
@@ -70,4 +71,5 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.hardware.location.gps.xml:system/etc/permissions/android.hardware.location.gps.xml \
     frameworks/native/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
     frameworks/native/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
+    frameworks/native/data/etc/android.hardware.wifi.direct.xml:system/etc/permissions/android.hardware.wifi.direct.xml \
     frameworks/native/data/etc/tablet_core_hardware.xml:system/etc/permissions/tablet_core_hardware.xml

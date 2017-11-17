@@ -1,0 +1,9 @@
+bcn_timeout=20
+kso_enable=0
+ccode=HK
+regrev=38
+mimo_bw_cap=1
+PM=0
+nv_by_chip=9 \
+43430 0 nvram_bcm43438a0.txt \
+43430 1 nvram_bcm43438a1.txt

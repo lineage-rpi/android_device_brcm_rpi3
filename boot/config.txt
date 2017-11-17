@@ -2,10 +2,10 @@ hdmi_force_hotplug=1
 hdmi_drive=2
 config_hdmi_boost=4
 hdmi_group=1
-hdmi_mode=4
+hdmi_mode=16
 disable_overscan=1
-framebuffer_width=1280
-framebuffer_height=720
+framebuffer_width=1920
+framebuffer_height=1080
 kernel=zImage
 device_tree=bcm2710-rpi-3-b.dtb
 dtparam=audio=on
