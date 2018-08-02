@@ -4,20 +4,25 @@ LINEAGEVERSION=lineage-15.1
 DATE=`date +%Y%m%d`
 IMGNAME=$LINEAGEVERSION-$DATE-rpi3.img
 IMGSIZE=4
+OUTDIR=${ANDROID_PRODUCT_OUT:="../../../out/target/product/rpi3"}
+SUDO=
 
 if [ `id -u` != 0 ]; then
-	echo "Must be root to run script!"
-	exit
+	if ! [ -x "$(command -v sudo)" ]; then
+		echo "Must be root to run script!"
+		exit
+	fi
+	SUDO="sudo"
 fi
 
 if [ -f $IMGNAME ]; then
 	echo "File $IMGNAME already exists!"
 else
 	echo "Creating image file $IMGNAME..."
-	dd if=/dev/zero of=$IMGNAME bs=512k count=$(echo "$IMGSIZE*1024*2" | bc)
+	$SUDO dd if=/dev/zero of=$IMGNAME bs=512k count=$(echo "$IMGSIZE*1024*2" | bc)
 	sync
 	echo "Creating partitions..."
-	kpartx -a $IMGNAME
+	$SUDO kpartx -a $IMGNAME
 	sync
 	(
 	echo o
@@ -47,34 +52,34 @@ else
 	echo a
 	echo 1
 	echo w
-	) | fdisk /dev/loop0
+	) | $SUDO fdisk /dev/loop0
 	sync
-	kpartx -d $IMGNAME
+	$SUDO kpartx -d $IMGNAME
 	sync
-	kpartx -a $IMGNAME
+	$SUDO kpartx -a $IMGNAME
 	sync
 	sleep 5
-	mkfs.fat -F 32 /dev/mapper/loop0p1
-	mkfs.ext4 /dev/mapper/loop0p4
-	resize2fs /dev/mapper/loop0p4 687868
+	$SUDO mkfs.fat -F 32 /dev/mapper/loop0p1
+	$SUDO mkfs.ext4 /dev/mapper/loop0p4
+	$SUDO resize2fs /dev/mapper/loop0p4 687868
 	echo "Copying system..."
-	dd if=../../../out/target/product/rpi3/system.img of=/dev/mapper/loop0p2 bs=1M
+	$SUDO dd if=$OUTDIR/system.img of=/dev/mapper/loop0p2 bs=1M
 	echo "Copying vendor..."
-	dd if=../../../out/target/product/rpi3/vendor.img of=/dev/mapper/loop0p3 bs=1M
+	$SUDO dd if=$OUTDIR/vendor.img of=/dev/mapper/loop0p3 bs=1M
 	echo "Copying boot..."
 	mkdir -p sdcard/boot
 	sync
-	mount /dev/mapper/loop0p1 sdcard/boot
+	$SUDO mount /dev/mapper/loop0p1 sdcard/boot
 	sync
-	cp boot/* sdcard/boot
-	cp ../../../vendor/brcm/rpi3/proprietary/boot/* sdcard/boot
-	cp ../../../out/target/product/rpi3/obj/KERNEL_OBJ/arch/arm/boot/zImage sdcard/boot
-	cp -R ../../../out/target/product/rpi3/obj/KERNEL_OBJ/arch/arm/boot/dts/* sdcard/boot
-	cp ../../../out/target/product/rpi3/ramdisk.img sdcard/boot
+	$SUDO cp boot/* sdcard/boot
+	$SUDO cp ../../../vendor/brcm/rpi3/proprietary/boot/* sdcard/boot
+	$SUDO cp $OUTDIR/obj/KERNEL_OBJ/arch/arm/boot/zImage sdcard/boot
+	$SUDO cp -R $OUTDIR/obj/KERNEL_OBJ/arch/arm/boot/dts/* sdcard/boot
+	$SUDO cp $OUTDIR/ramdisk.img sdcard/boot
 	sync
-	umount /dev/mapper/loop0p1
+	$SUDO umount /dev/mapper/loop0p1
 	rm -rf sdcard
-	kpartx -d $IMGNAME
+	$SUDO kpartx -d $IMGNAME
 	sync
 	echo "Done, created $IMGNAME!"
 fi
