@@ -22,8 +22,6 @@ else
 	$SUDO dd if=/dev/zero of=$IMGNAME bs=512k count=$(echo "$IMGSIZE*1024*2" | bc)
 	sync
 	echo "Creating partitions..."
-	$SUDO kpartx -a $IMGNAME
-	sync
 	(
 	echo o
 	echo n
@@ -43,7 +41,6 @@ else
 	echo +256M
 	echo n
 	echo p
-	echo 4
 	echo
 	echo
 	echo t
@@ -52,24 +49,27 @@ else
 	echo a
 	echo 1
 	echo w
-	) | $SUDO fdisk /dev/loop0
+	) | $SUDO fdisk $IMGNAME
 	sync
-	$SUDO kpartx -d $IMGNAME
+	LOOPDEV=`$SUDO kpartx -av $IMGNAME | awk 'NR==1{ sub(/p[0-9]$/, "", $3); print $3 }'`
 	sync
-	$SUDO kpartx -a $IMGNAME
-	sync
+	if [ -z "$LOOPDEV" ]; then
+		echo "Unable to find loop device!"
+		exit
+	fi
+	echo "Image mounted as $LOOPDEV"
 	sleep 5
-	$SUDO mkfs.fat -F 32 /dev/mapper/loop0p1
-	$SUDO mkfs.ext4 /dev/mapper/loop0p4
-	$SUDO resize2fs /dev/mapper/loop0p4 687868
+	$SUDO mkfs.fat -F 32 /dev/mapper/${LOOPDEV}p1
+	$SUDO mkfs.ext4 /dev/mapper/${LOOPDEV}p4
+	$SUDO resize2fs /dev/mapper/${LOOPDEV}p4 687868
 	echo "Copying system..."
-	$SUDO dd if=$OUTDIR/system.img of=/dev/mapper/loop0p2 bs=1M
+	$SUDO dd if=$OUTDIR/system.img of=/dev/mapper/${LOOPDEV}p2 bs=1M
 	echo "Copying vendor..."
-	$SUDO dd if=$OUTDIR/vendor.img of=/dev/mapper/loop0p3 bs=1M
+	$SUDO dd if=$OUTDIR/vendor.img of=/dev/mapper/${LOOPDEV}p3 bs=1M
 	echo "Copying boot..."
 	mkdir -p sdcard/boot
 	sync
-	$SUDO mount /dev/mapper/loop0p1 sdcard/boot
+	$SUDO mount /dev/mapper/${LOOPDEV}p1 sdcard/boot
 	sync
 	$SUDO cp boot/* sdcard/boot
 	$SUDO cp ../../../vendor/brcm/rpi3/proprietary/boot/* sdcard/boot
@@ -77,7 +77,7 @@ else
 	$SUDO cp -R $OUTDIR/obj/KERNEL_OBJ/arch/arm/boot/dts/* sdcard/boot
 	$SUDO cp $OUTDIR/ramdisk.img sdcard/boot
 	sync
-	$SUDO umount /dev/mapper/loop0p1
+	$SUDO umount /dev/mapper/${LOOPDEV}p1
 	rm -rf sdcard
 	$SUDO kpartx -d $IMGNAME
 	sync
