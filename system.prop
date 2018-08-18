@@ -1,7 +1,4 @@
 
-# Bluetooth
-ro.rfkilldisabled=1
-
 # Display
 debug.drm.mode.force=1280x720
 ro.opengles.version=131072

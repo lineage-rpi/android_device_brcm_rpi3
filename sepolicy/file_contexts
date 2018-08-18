@@ -1,6 +1,9 @@
 /dev/dri(/.*)?                  u:object_r:gpu_device:s0
+/dev/rfkill                     u:object_r:rfkill_device:s0
 /dev/ttyAMA0                    u:object_r:hci_attach_dev:s0
 /dev/ttyACM0                    u:object_r:gps_device:s0
+
+/sys/class/rfkill/rfkill0/state u:object_r:sysfs_bluetooth_writable:s0
 
 /dev/block/mmcblk0p1            u:object_r:boot_block_device:s0
 /dev/block/mmcblk0p2            u:object_r:system_block_device:s0
