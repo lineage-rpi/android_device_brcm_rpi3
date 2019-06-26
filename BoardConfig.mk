@@ -43,6 +43,7 @@ TARGET_RECOVERY_FORCE_PIXEL_FORMAT := "RGB_565"
 # TWRP
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/rpi_backlight/brightness"
 TW_EXCLUDE_MTP := true
+TW_EXCLUDE_TWRPAPP := true
 TW_INCLUDE_CRYPTO := true
 TW_NO_BATT_PERCENT := true
 TW_NO_REBOOT_BOOTLOADER := true
